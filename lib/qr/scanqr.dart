@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import 'package:qrdemo/main.dart';
+import 'package:qrdemo/qr/utils.dart';
 
 class QrScan extends StatefulWidget {
   const QrScan({super.key});
@@ -25,14 +28,14 @@ class _QrScanState extends State<QrScan> {
     super.dispose();
   }
 
-  // @override
-  // void reassemble() async {
-  //   super.reassemble();
-  //   if (Platform.isAndroid) {
-  //     await controller!.pauseCamera();
-  //   }
-  //   await controller!.resumeCamera();
-  // }
+  @override
+  void reassemble() async {
+    super.reassemble();
+    if (Platform.isAndroid) {
+      await controller!.pauseCamera();
+    }
+    await controller!.resumeCamera();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,20 +79,23 @@ class _QrScanState extends State<QrScan> {
                   child: buildResult(),
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-                Container(
-                  height: 60,
-                  width: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[400],
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Report',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                GestureDetector(
+                  onTap: (() => Utils.openPay(pay: '${barcode!.code}')),
+                  child: Container(
+                    height: 60,
+                    width: 200,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Open in App',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ),
@@ -121,10 +127,13 @@ class _QrScanState extends State<QrScan> {
         ),
       );
   void onQRViewCreated(QRViewController controller) {
+    setState(() => this.controller = controller);
+    controller.scannedDataStream.listen((barcode) => setState((() {
+          this.barcode = barcode;
+          controller.dispose();
+        })));
     setState(() {
-      this.controller = controller;
       controller.resumeCamera();
     });
-    controller.scannedDataStream.listen((barcode) => controller.dispose());
   }
 }
