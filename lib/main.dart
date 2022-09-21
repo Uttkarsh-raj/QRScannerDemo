@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+//import 'package:qrdemo/qr/apps.dart';
 //import 'package:qrdemo/qr/qrscan.dart';
 import 'package:qrdemo/qr/scanqr.dart';
 
