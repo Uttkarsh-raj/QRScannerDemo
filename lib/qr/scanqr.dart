@@ -106,7 +106,8 @@ class _QrScanState extends State<QrScan> {
                   //       mode: LaunchMode.inAppWebView,
                   //       );
                   // },
-                  onTap: launchURL,
+                  //onTap: launchURL,
+                  onTap: _launchURL,
                   child: Container(
                     height: 60,
                     width: 200,
@@ -135,7 +136,7 @@ class _QrScanState extends State<QrScan> {
   }
 
   void sendPayment() async {
-    String upiurl = '${barcode}';
+    String upiurl = '$barcode';
     await launchUrl(
       Uri.parse(upiurl),
       mode: LaunchMode.externalApplication,
@@ -192,13 +193,22 @@ class _QrScanState extends State<QrScan> {
   //   }
   // }
 
-  void launchURL() async {
-    try {
-      await canLaunchUrl(Uri.parse('${barcode!.code}'))
-          ? await launchUrl(Uri.parse('${barcode!.code}'))
-          : throw 'Could not launch ${barcode!.code}';
-    } catch (e) {
-      print(e);
-    }
+  // void launchURL() async {
+  //   try {
+  //     await canLaunchUrl(Uri.parse('${barcode!.code}'))
+  //         ? await launchUrl(Uri.parse('${barcode!.code}'))
+  //         : throw 'Could not launch ${barcode!.code}';
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
+
+   _launchURL() async {
+  var url = '${barcode!.code}';
+  if (await launch(url)) {
+    await canLaunch(url);
+  } else {
+    throw 'Could not launch $url';
   }
+   }
 }
