@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import 'package:qrdemo/main.dart';
-// import 'package:qrdemo/qr/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class QrScan extends StatefulWidget {
@@ -12,25 +11,6 @@ class QrScan extends StatefulWidget {
   @override
   State<QrScan> createState() => _QrScanState();
 }
-
-// launchURL(barcode) async {
-//   if (await canLaunchUrl(barcode)) {
-//     await launchUrl(barcode);
-//   } else {
-//     throw 'Could not launch !!';
-//   }
-// }
-
-// _launchUrl() {
-//   launchURL(barcode) async {
-//     if (await canLaunchUrl(barcode)) {
-//       await launchUrl(Uri.parse('$barcode'),
-//           mode: LaunchMode.externalNonBrowserApplication);
-//     } else {
-//       throw 'Could not launch !!';
-//     }
-//   }
-// }
 
 class _QrScanState extends State<QrScan> {
   final qrKey = GlobalKey(debugLabel: 'QR');
@@ -60,7 +40,6 @@ class _QrScanState extends State<QrScan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
       body: Center(
         child: Stack(children: [
           buildQrView(context),
@@ -100,13 +79,6 @@ class _QrScanState extends State<QrScan> {
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                 GestureDetector(
-                  // onTap: (() => Utils.openPay(pay: '${barcode!.code}')),
-                  // onTap: () async {
-                  //   await launchUrl(Uri.parse('$barcode'),
-                  //       mode: LaunchMode.inAppWebView,
-                  //       );
-                  // },
-                  //onTap: launchURL,
                   onTap: _launchURL,
                   child: Container(
                     height: 60,
@@ -135,14 +107,6 @@ class _QrScanState extends State<QrScan> {
     );
   }
 
-  void sendPayment() async {
-    String upiurl = '$barcode';
-    await launchUrl(
-      Uri.parse(upiurl),
-      mode: LaunchMode.externalApplication,
-    );
-  }
-
   Widget buildResult() => Text(
         barcode != null ? '${barcode!.code}' : 'Scan a code!',
         maxLines: 3,
@@ -165,33 +129,23 @@ class _QrScanState extends State<QrScan> {
     setState(() => this.controller = controller);
     controller.scannedDataStream.listen((barcode) => setState((() {
           this.barcode = barcode;
+          launcherUrl();
           // controller.dispose();
         })));
-    setState(() {
-      controller.resumeCamera();
-    });
-
+    setState(
+      () {
+        controller.resumeCamera();
+      },
+    );
     // if (barcode != null) {
-    //   // launchUrl(
-    //   //     Uri(
-    //   //       path: '$barcode',
-    //   //     ),
-    //   //     mode: LaunchMode.externalApplication,
-    //   //     );
-    //   launchUrl(Uri.parse('$barcode'), mode: LaunchMode.externalApplication);
+    //   try {
+    //     launcherUrl();
+    //   } catch (e) {
+    //     print('****************');
+    //     print(e);
+    //   }
     // }
   }
-
-  // void _launchURL() async {
-  //   String url = '$barcode';
-  //   var result = await launchUrl(Uri.parse(url));
-  //   debugPrint(result.toString());
-  //   if (result == true) {
-  //     print("Done");
-  //   } else if (result == false) {
-  //     print("Fail");
-  //   }
-  // }
 
   // void launchURL() async {
   //   try {
@@ -203,12 +157,21 @@ class _QrScanState extends State<QrScan> {
   //   }
   // }
 
-   _launchURL() async {
-  var url = '${barcode!.code}';
-  if (await launch(url)) {
-    await canLaunch(url);
-  } else {
-    throw 'Could not launch $url';
+  _launchURL() async {
+    var url = '${barcode!.code}';
+    if (await launch(url)) {
+      await canLaunch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
-   }
+
+  void launcherUrl() async {
+    var url = '${barcode!.code}';
+    if (await launch(url)) {
+      await canLaunch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 }
